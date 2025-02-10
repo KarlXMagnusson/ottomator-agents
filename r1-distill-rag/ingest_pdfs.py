@@ -1,7 +1,7 @@
 from langchain_community.document_loaders import DirectoryLoader, PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import OllamaEmbeddings  # Use Ollama instead of HuggingFace
 from dotenv import load_dotenv
 import os
 import shutil
@@ -33,12 +33,9 @@ def create_vector_store(chunks, persist_directory: str):
         print(f"Clearing existing vector store at {persist_directory}")
         shutil.rmtree(persist_directory)
     
-    # Initialize HuggingFace embeddings
-    embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-mpnet-base-v2",
-        model_kwargs={'device': 'cpu'}
-    )
-    
+    # Use Ollama model for embeddings
+    embeddings = OllamaEmbeddings(model="nomic-embed-text")  # Updated to use Ollama
+
     # Create and persist Chroma vector store
     print("Creating new vector store...")
     vectordb = Chroma.from_documents(
